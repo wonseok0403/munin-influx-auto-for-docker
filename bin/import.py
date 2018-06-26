@@ -55,7 +55,7 @@ def main(args):
     #reads every XML file and export as in the InfluxDB database
     exporter = InfluxdbClient(settings)
     if settings.interactive:
-        exporter.prompt_setup()
+        exporter.prompt_setup() # done(1/)
     else:
         # even in non-interactive mode, we ask for the password if empty
         if not exporter.settings.influxdb['password']:
@@ -80,7 +80,10 @@ def main(args):
         return
 
     if settings.interactive:
-        settings.grafana['create'] = (raw_input("Would you like to generate a Grafana dashboard? [y]/n: ") or "y") in ('y', 'Y')
+        #settings.grafana['create'] = (raw_input("Would you like to generate a Grafana dashboard? [y]/n: ") or "y") in ('y', 'Y')
+        print("Would you like to generate a Graana dashboard? ")
+        print("-----------_Auto_-----------")
+        settings.grafana['create'] = True
 
     if settings.grafana['create']:
         dashboard = Dashboard(settings)

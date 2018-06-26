@@ -9,6 +9,7 @@ from settings import Settings
 from influxdbclient import InfluxdbClient
 
 import requests
+import os
 
 class Query:
     DEFAULT_FUNC = "mean"
@@ -225,8 +226,9 @@ class Dashboard:
     def prompt_setup(self):
         setup = self.settings.grafana
         print("\nGrafana: Please enter your connection information")
-        setup['host'] = raw_input("  - host [http://localhost:3000]: ").strip() or "http://localhost:3000"
-        setup['auth'] = None
+        #setup['host'] = raw_input("  - host [http://localhost:3000]: ").strip() or "http://localhost:3000"
+        setup['host'] = "http://"+str(os.environ['MASTER_SERVER'])+":3000"
+        setup['auth'] = ('admin', 'admin')
         setup['filename'] = None
 
         while not GrafanaApi.test_host(setup['host']) and not setup['filename']:
@@ -239,19 +241,33 @@ class Dashboard:
 
         if GrafanaApi.test_host(setup['host']):
             while not GrafanaApi.test_auth(setup['host'], setup['auth']):
-                user = raw_input("  - user [admin]: ").strip() or "admin"
+                #user = raw_input("  - user [admin]: ").strip() or "admin"
+                print("  - usder [admin]: ")
+                print(" ---------_auto_--------- ")
+                user = 'admin'
                 password = InfluxdbClient.ask_password()
                 setup['auth'] = (user, password)
 
             setup['access'] = None
             while setup['access'] not in ("proxy", "direct"):
-                setup['access'] = raw_input("  - data source access [proxy]/direct: ").strip() or "proxy"
+                #setup['access'] = raw_input("  - data source access [proxy]/direct: ").strip() or "proxy"
+                print(" - data source access [proxy]/direct: ")
+                print("----------Auto----------") 
+                setup['access'] = 'direct'
 
-        self.title = raw_input("  Dashboard title [{0}]: ".format(self.title)).strip() or self.title
-        graph_per_row = raw_input("  Number of graphs per row [2]: ").strip() or "2"
+        #self.title = raw_input("  Dashboard title [{0}]: ".format(self.title)).strip() or self.title
+        print("  Dashboard title ....")
+        print("-----------_auto_-----------")
+        self.title = self.title
+        #graph_per_row = raw_input("  Number of graphs per row [2]: ").strip() or "2"
+        print("  Number of graphs per row [2]: ")
+        graph_per_row = 2
         setup['graph_per_row'] = int(graph_per_row)
 
-        show_minmax = raw_input("  Show min/max/current in legend [y]/n: ").strip() or "y"
+        #show_minmax = raw_input("  Show min/max/current in legend [y]/n: ").strip() or "y"
+        print("  Show min/max/current in legen [y]/n: ")
+        print("----------_Auto_-----------")
+        show_minmax ='y'
         setup['show_minmax'] = show_minmax in ("y", "Y")
 
     def add_header(self, settings):

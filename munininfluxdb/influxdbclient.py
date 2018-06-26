@@ -52,12 +52,14 @@ class InfluxdbClient:
     def test_db(self, name):
         assert self.client
         if not name:
-            return False
+            #return False
+            name = "munin_db"
 
         db_list = self.client.get_list_database()
         if not {'name': name} in db_list:
             if self.settings.interactive:
-                create = raw_input("{0} database doesn't exist. Would you want to create it? [y]/n: ".format(name)) or "y"
+                print("{0} database doesn't exist. Would you want to create it? [y]/n: ".format(name))
+                create = 'y'
                 if not create in ("y", "Y"):
                     return False
 
@@ -115,8 +117,9 @@ class InfluxdbClient:
         setup = self.settings.influxdb
         print("\n{0}InfluxDB: Please enter your connection information{1}".format(Color.BOLD, Color.CLEAR))
         while not self.client:
-            hostname = raw_input("  - host/handle [{0}]: ".format(setup['host'])) or setup['host']
-            
+            #hostname = raw_input("  - host/handle [{0}]: ".format(setup['host'])) or setup['host']
+            print("----Autolization...-----")
+            hostname=setup['host']
             # I miss pointers and explicit references :(
             setup.update(parse_handle(hostname))
             if setup['port'] is None:
@@ -126,8 +129,10 @@ class InfluxdbClient:
             if self.connect(silent=True):
                 break
 
-            setup['port'] = raw_input("  - port [{0}]: ".format(setup['port'])) or setup['port']
-            setup['user'] = raw_input("  - user [{0}]: ".format(setup['user'])) or setup['user']
+            #setup['port'] = raw_input("  - port [{0}]: ".format(setup['port'])) or setup['port']
+            #setup['user'] = raw_input("  - user [{0}]: ".format(setup['user'])) or setup['user']
+            setup['port'] = setup['port']
+            setup['user'] = 'admin'
             setup['password'] = InfluxdbClient.ask_password()
 
             self.connect()
@@ -138,9 +143,14 @@ class InfluxdbClient:
             else:
                 if self.test_db(setup['database']):
                     break
-            setup['database'] = raw_input("  - database [munin]: ") or "munin"
+            #setup['database'] = raw_input("  - database [munin]: ") or "munin"
+            setup['database'] = "munin"
+            print("---------_Auto_---------")
 
-        group = raw_input("Group multiple fields of the same plugin in the same time series? [y]/n: ") or "y"
+        #group = raw_input("Group multiple fields of the same plugin in the same time series? [y]/n: ") or "y"
+        print("Group multiple fields of the same plugin in the same time series?")
+        print("-----------_Auto_------------")
+        group = 'y'
         setup['group_fields'] = group in ("y", "Y")
 
     def write_series(self, measurement, tags, fields, time_and_values):
