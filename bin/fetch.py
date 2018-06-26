@@ -22,7 +22,7 @@ try:
 except KeyError:
     CRON_USER = 'root'
 else:
-    CRON_USER = 'munin'
+    CRON_USER = 'root'
 
 # Cron job comment is used to uninstall and must not be manually deleted from the crontab
 CRON_COMMENT = 'Update InfluxDB with fresh values from Munin'
